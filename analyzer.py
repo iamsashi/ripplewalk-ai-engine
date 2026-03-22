@@ -1,66 +1,109 @@
 import os
 import json
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from dotenv import load_dotenv
 from google import genai
 
-# 1. Load configuration
+# -----------------------------
+# Load environment variables
+# -----------------------------
 load_dotenv()
-app = FastAPI(title="Ripplewalk AI Analytics Engine")
 
-# 2. Setup Gemini Client
 API_KEY = os.getenv("GEMINI_API_KEY")
+
 if not API_KEY:
-    raise ValueError("GEMINI_API_KEY missing from .env file")
+    raise ValueError("❌ GEMINI_API_KEY not found in .env file")
+
+# -----------------------------
+# Create Gemini client
+# -----------------------------
 client = genai.Client(api_key=API_KEY)
 
-# 3. Data Schemas
-class FeedbackRequest(BaseModel):
-    review: str = Field(..., min_length=10, max_length=1000)
-    source: str = "customer_chat"
+# -----------------------------
+# Create FastAPI app
+# -----------------------------
+app = FastAPI(title="Ripplewalk AI Feedback Engine")
+
+# -----------------------------
+# Data Models
+# -----------------------------
+class ReviewInput(BaseModel):
+    review: str
+
 
 class AnalysisResponse(BaseModel):
     brand: str
     sentiment_score: int
-    category: str 
+    category: str
     is_urgent: bool
     summary: str
 
-# 4. Home Route
-@app.get("/")
-async def home():
-    return {"status": "Online", "message": "Go to /docs to test"}
 
-# 5. Core Logic
+# -----------------------------
+# Home Route
+# -----------------------------
+@app.get("/")
+def home():
+    return {
+        "status": "online",
+        "message": "Ripplewalk AI Feedback Engine running",
+        "docs": "http://127.0.0.1:8000/docs"
+    }
+
+
+# -----------------------------
+# Analyze Review Endpoint
+# -----------------------------
 @app.post("/analyze", response_model=AnalysisResponse)
-async def analyze_feedback(data: FeedbackRequest):
+async def analyze_review(input_data: ReviewInput):
+
     prompt = f"""
-    Analyze this customer review: "{data.review}"
-    Return ONLY a JSON object with:
-    - brand: (e.g., Pink Adrak, Great Indian Khichdi, or Unknown)
-    - sentiment_score: (1-10)
-    - category: (Food, Delivery, or Service)
-    - is_urgent: (true/false)
-    - summary: (Max 10 words)
-    """
+You are an AI assistant for a multi-brand cloud kitchen.
+
+Analyze the following food review and extract structured information.
+
+Return ONLY valid JSON with these keys:
+
+brand: string  
+sentiment_score: integer from 1 to 10  
+category: "Food", "Delivery", or "Service"  
+is_urgent: true if hygiene issue OR score < 4  
+summary: short one sentence summary  
+
+Review:
+"{input_data.review}"
+"""
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.0-flash", 
+            model="gemini-2.5-flash",
             contents=prompt,
-            config={'response_mime_type': 'application/json'}
+            config={
+                "response_mime_type": "application/json"
+            }
         )
-        
-        result = json.loads(response.text)
-        
-        if result.get("is_urgent") or result.get("sentiment_score", 10) <= 3:
-            print(f"🚨 ALERT: Escalating {result.get('brand')} issue!")
-            
-        return result
+
+        parsed = json.loads(response.text)
+
+        return parsed
 
     except Exception as e:
-        print(f"DEBUG ERROR: {e}")
-        if "429" in str(e):
-            raise HTTPException(status_code=429, detail="API Limit reached. Wait 60s.")
-        raise HTTPException(status_code=500, detail="AI Analysis Failed")
+        raise HTTPException(
+            status_code=500,
+            detail=f"AI processing failed: {str(e)}"
+        )
+
+
+# -----------------------------
+# Run Server
+# -----------------------------
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        "analyzer:app",
+        host="127.0.0.1",
+        port=8000,
+        reload=True
+    )
