@@ -1,4 +1,4 @@
-🚀 Ripplewalk AI Feedback Engine
+🚀 FoodTech AI Feedback Engine
 An intelligent backend service designed to automate customer feedback analysis for cloud kitchens. This engine leverages Google Gemini 2.0 Flash to transform raw customer reviews into actionable data, enabling real-time brand monitoring and crisis management.
 
 🎯 The Problem & Solution
@@ -25,7 +25,7 @@ Environment: Python-Dotenv (Secure secret management)
 
 📂 Project Structure
 Plaintext
-ripplewalk-ai-engine/
+foodtech-ai-engine/
 ├── .venv/               # Virtual environment (ignored by git)
 ├── .env                 # API Keys (ignored by git)
 ├── .gitignore           # Safety rules for GitHub
@@ -35,8 +35,8 @@ ripplewalk-ai-engine/
 🚦 Getting Started
 1. Installation
 Bash
-git clone https://github.com/iamsashi/ripplewalk-ai-engine.git
-cd ripplewalk-ai-engine
+git clone https://github.com/iamsashi/foodtech-ai-engine.git
+cd foodtech-ai-engine
 python -m venv .venv
 # Activate: .venv\Scripts\activate (Windows)
 pip install -r requirements.txt
