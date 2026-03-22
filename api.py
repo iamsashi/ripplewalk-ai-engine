@@ -4,10 +4,10 @@ import json
 from google import genai
 
 # 1. Setup the Web Server
-app = FastAPI(title="Ripplewalk AI Feedback Router")
+app = FastAPI(title="FoodTech AI Feedback Router")
 
 # 2. Setup Gemini
-client = genai.Client(api_key="AIzaSyBfLJoHt33NDvwYpfbzS4F63AWJe4noMoA")
+client = genai.Client(api_key="___________________________________")
 
 # 3. Define what the incoming request will look like
 class ReviewInput(BaseModel):
