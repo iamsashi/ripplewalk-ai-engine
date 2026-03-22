@@ -1,4 +1,4 @@
-🚀 FoodTech AI Feedback Engine
+🚀 Real-Time Brand Escalation & Intelligence Engine (FoodTech AI Feedback Engine)
 An intelligent backend service designed to automate customer feedback analysis for cloud kitchens. This engine leverages Google Gemini 2.0 Flash to transform raw customer reviews into actionable data, enabling real-time brand monitoring and crisis management.
 
 🎯 The Problem & Solution
