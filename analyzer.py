@@ -47,7 +47,7 @@ class AnalysisResponse(BaseModel):
 def home():
     return {
         "status": "online",
-        "message": "Ripplewalk AI Feedback Engine running",
+        "message": "FoodTech AI Feedback Engine running",
         "docs": "http://127.0.0.1:8000/docs"
     }
 
